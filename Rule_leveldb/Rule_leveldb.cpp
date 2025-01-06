@@ -3,10 +3,54 @@
 
 #include <iostream>
 
-int main()
-{
-    std::cout << "Hello World!\n";
+#include "leveldb/db.h"
+
+int main() {
+  // Create a LevelDB database
+  leveldb::DB* db;
+  leveldb::Options options;
+  options.create_if_missing = true;  // Create the database if it does not exist
+
+  // Open the database
+  leveldb::Status status = leveldb::DB::Open(options, "my_database", &db);
+  if (!status.ok()) {
+    std::cerr << "Unable to open/create database: " << status.ToString()
+              << std::endl;
+    return -1;
+  }
+
+  // Insert a key-value pair
+  std::string key = "name";
+  std::string value = "Alice";
+  status = db->Put(leveldb::WriteOptions(), key, value);
+  if (!status.ok()) {
+    std::cerr << "Failed to write to database: " << status.ToString()
+              << std::endl;
+  }
+
+  // Retrieve the value for a key
+  std::string retrieved_value;
+  status = db->Get(leveldb::ReadOptions(), key, &retrieved_value);
+  if (status.ok()) {
+    std::cout << "Retrieved value: " << retrieved_value << std::endl;
+  } else {
+    std::cerr << "Failed to read from database: " << status.ToString()
+              << std::endl;
+  }
+
+  // Delete a key-value pair
+  status = db->Delete(leveldb::WriteOptions(), key);
+  if (!status.ok()) {
+    std::cerr << "Failed to delete key from database: " << status.ToString()
+              << std::endl;
+  }
+
+  // Close the database
+  delete db;
+
+  return 0;
 }
+
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
