@@ -28,7 +28,17 @@ int main() {
               << std::endl;
   }
 
+  //Insert one more key-value pair
+  key = "age";
+  value = "25";
+  status = db->Put(leveldb::WriteOptions(), key, value);
+  if (!status.ok()) {
+	std::cerr << "Failed to write to database: " << status.ToString()
+			  << std::endl;
+  }
+
   // Retrieve the value for a key
+  key = "name";
   std::string retrieved_value;
   status = db->Get(leveldb::ReadOptions(), key, &retrieved_value);
   if (status.ok()) {
@@ -36,6 +46,15 @@ int main() {
   } else {
     std::cerr << "Failed to read from database: " << status.ToString()
               << std::endl;
+  }
+  //Retrieve the value for another key
+  key = "age";
+  status = db->Get(leveldb::ReadOptions(), key, &retrieved_value);
+  if (status.ok()) {
+	std::cout << "Retrieved value: " << retrieved_value << std::endl;
+  } else {
+	std::cerr << "Failed to read from database: " << status.ToString()
+			  << std::endl;
   }
 
   // Delete a key-value pair
